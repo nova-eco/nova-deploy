@@ -126,7 +126,7 @@ are organized by package (nova-db and nova-api) with standardized prefixes for c
 
 | Variable                 | Description                                | Default                       | Used In                          |
 | ------------------------ | ------------------------------------------ | ----------------------------- | -------------------------------- |
-| `NOVA_DB_AUTHOR`         | Author information for the nova-db package | `"Nova Admin <admin@ecodev>"` | nova-db/Dockerfile               |
+| `NOVA_DB_AUTHOR`         | Author information for the nova-db package | `"Nova Admin <admin@nova>"`   | nova-db/Dockerfile               |
 | `NOVA_DB_CONTAINER_NAME` | Name of the database container             | `"nova-db"`                   | Container identification         |
 | `NOVA_DB_NAME`           | MariaDB database name                      | `"nova"`                      | compose.yaml, nova-db/Dockerfile |
 | `NOVA_DB_PORT`           | Database port                              | `"3306"`                      | compose.yaml port mapping        |
