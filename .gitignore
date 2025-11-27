@@ -38,7 +38,11 @@
 
 # Dirs to be ignored
 #
+backups/*
+!backups/.gitkeep
 coverage
+data/*
+!data/.gitkeep
 deps
 dist
 node_modules/

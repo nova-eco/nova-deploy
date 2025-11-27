@@ -1,0 +1,82 @@
+#####################################################################
+#                                                                   #
+# Workflow: deploy-to-droplet.yml                                   #
+#                                                                   #
+# Purpose:  Deploy nova-deploy to Digital Ocean droplet             #
+#                                                                   #
+# Date:     27th November 2025                                      #
+#                                                                   #
+# Author:   nova admin <admin@nova.eco>                             #
+#                                                                   #
+#####################################################################
+
+name: Deploy to Digital Ocean
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Droplet
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Digital Ocean droplet
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.DROPLET_PORT || 22 }}
+          script: |
+            set -e
+
+            echo "🔄 Navigating to deployment directory..."
+            cd ${{ secrets.DEPLOY_PATH || '/root/nova-deploy' }}
+
+            echo "📥 Pulling latest changes from GitHub..."
+            git fetch origin
+            git reset --hard origin/${{ github.ref_name }}
+
+            echo "📦 Installing/updating dependencies..."
+            npm ci --production
+
+            echo "🔍 Validating Docker Compose configuration..."
+            docker compose config > /dev/null
+
+            echo "🐳 Pulling latest Docker images..."
+            docker compose pull
+
+            echo "🔄 Restarting services..."
+            docker compose down
+            docker compose up -d --force-recreate
+
+            echo "⏳ Waiting for services to be healthy..."
+            sleep 10
+
+            echo "✅ Verifying deployment..."
+            docker compose ps
+
+            echo "🎉 Deployment completed successfully!"
+            echo "📊 Deployment Summary:"
+            echo "  - Branch: ${{ github.ref_name }}"
+            echo "  - Commit: ${{ github.sha }}"
+            echo "  - Triggered by: ${{ github.actor }}"
+            echo "  - Timestamp: $(date)"
+
+      - name: Deployment status notification
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Deployment to Digital Ocean succeeded"
+          else
+            echo "❌ Deployment to Digital Ocean failed"
+            exit 1
+          fi

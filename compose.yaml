@@ -2,14 +2,48 @@
 #                                                                   #
 # Script:  compose.yaml                                             #
 #                                                                   #
-# Purpose: Docker compose definition for nova-deploy                #
+# Purpose: Docker compose definition for nova-db                    #
 #                                                                   #
-# Date:    27th November 2025                                       #
+# Date:    11th May 2025                                            #
 #                                                                   #
-# Author:  nova admin <admin@nova.eco>                              #
+# Author:  nova admin <admin@nova>                                  #
 #                                                                   #
 #####################################################################
 
 services:
   nova-db:
-     image: "ghcr.io/nova-eco/nova-db:latest"
+    image: 'ghcr.io/nova-eco/nova-db:latest'
+    volumes:
+      - ./data:/var/lib/mysql
+      - ./backups:/backups
+    env_file:
+      - path: ./.env
+        required: true
+    environment:
+      MARIADB_DATABASE: ${NOVA_DB__NAME}
+      MARIADB_ROOT_PASSWORD: ${NOVA_DB__USER__ROOT_PASS}
+      MARIADB_USER: ${NOVA_DB__USER__STD}
+      MARIADB_PASSWORD: ${NOVA_DB__USER__STD_PASS}
+    healthcheck:
+      interval: 10s
+      start_period: 30s
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+      timeout: 5s
+    networks:
+      - '${NOVA_DB__NETWORK}'
+    ports:
+      - '127.0.0.1:${NOVA_DB__PORT}:3306'
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          memory: 512M
+
+networks:
+  nova-network:
+    driver: bridge
+    internal: false
+    name: ${NOVA_DB__NETWORK}

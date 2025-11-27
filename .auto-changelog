@@ -1,0 +1,9 @@
+{
+  "backfillLimit": false,
+  "commitLimit": false,
+  "hideCredit": true,
+  "output": "CHANGELOG.md",
+  "package": true,
+  "template": "compact",
+  "unreleased": true
+}

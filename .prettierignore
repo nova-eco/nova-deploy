@@ -19,5 +19,4 @@ LICENSE.txt
 #
 # Standard dirs to be ignored
 #
-deps/
 node_modules/

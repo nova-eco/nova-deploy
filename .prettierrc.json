@@ -2,30 +2,8 @@
   "arrowParens": "always",
   "bracketSpacing": true,
   "endOfLine": "lf",
-  "importOrder": [
-    "dotenv/config",
-    "<BUILTIN_MODULES>",
-    "<THIRD_PARTY_MODULES>",
-    "^@nova/(.*)$",
-    "^@app/core/(.*)$",
-    "^@app/interfaces/(.*)$",
-    "^[./]"
-  ],
   "insertPragma": false,
-  "jsxSingleQuote": false,
-  "overrides": [
-    {
-      "files": ["./Dockerfile", "compose.yaml", "test/**/*.test.ts"],
-      "options": {
-        "importOrder": []
-      }
-    }
-  ],
-  "plugins": [
-    "@ianvs/prettier-plugin-sort-imports",
-    "prettier-plugin-sh",
-    "prettier-plugin-sort-json"
-  ],
+  "plugins": ["prettier-plugin-sh", "prettier-plugin-sort-json"],
   "printWidth": 90,
   "proseWrap": "always",
   "quoteProps": "as-needed",

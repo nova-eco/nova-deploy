@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Generate changelog
+npm run changelog --silent
+
+# Add CHANGELOG.md if it has changes
+if git diff --quiet CHANGELOG.md 2> /dev/null; then
+  # No changes to CHANGELOG.md
+  :
+else
+  # CHANGELOG.md has changes, add it to the commit
+  git add CHANGELOG.md 2> /dev/null || true
+fi

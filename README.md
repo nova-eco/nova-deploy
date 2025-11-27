@@ -1,6 +1,43 @@
 # nova-deploy
 
+[![Code Quality](https://github.com/nova-eco/nova-deploy/actions/workflows/code-quality.yml/badge.svg)](https://github.com/nova-eco/nova-deploy/actions/workflows/code-quality.yml)
+[![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io/)
+[![CSpell](https://img.shields.io/badge/spell_check-cspell-blue.svg)](https://cspell.org/)
+
 Deployment package for the Nova database infrastructure.
+
+## Project Status
+
+This project is **actively maintained**. We welcome contributions, bug reports, and
+feature requests.
+
+## Table of Contents
+
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Database Connection](#database-connection)
+    - [Connecting to MariaDB from Command Line](#connecting-to-mariadb-from-command-line)
+    - [Schema Updates and Data Persistence](#schema-updates-and-data-persistence)
+- [Architecture](#architecture)
+  - [Automated Rebuild Process](#automated-rebuild-process)
+  - [Workflow Triggers](#workflow-triggers)
+- [Deployment](#deployment)
+  - [Digital Ocean Deployment](#digital-ocean-deployment)
+  - [Required Secrets](#required-secrets)
+  - [Manual Deployment](#manual-deployment)
+- [Development](#development)
+  - [Code Quality Standards](#code-quality-standards)
+    - [Formatting](#formatting)
+    - [Docker Compose Linting](#docker-compose-linting)
+    - [Spell Checking](#spell-checking)
+  - [Pushing Changes](#pushing-changes)
+  - [Running All Checks Manually](#running-all-checks-manually)
+- [Scripts](#scripts)
+- [Changelog](#changelog)
+- [License](#license)
+- [Author](#author)
 
 ## Getting Started
 
@@ -27,7 +64,6 @@ Deployment package for the Nova database infrastructure.
    ```
 
    This will automatically:
-
    - Install all required packages
    - Set up Husky git hooks for commit validation and pre-push checks
    - Copy `.env.TEMPLATE` to `.env` (if it doesn't already exist)
@@ -40,12 +76,136 @@ Deployment package for the Nova database infrastructure.
    NOVA__NETWORK="your-network-name"
    ```
 
+### Usage
+
+#### Starting the Database
+
+To start the nova-deploy database infrastructure:
+
+```bash
+npm start
+```
+
+This command will:
+
+1. Run all code quality checks (formatting, Docker compose linting, spelling)
+2. Build and start the Docker containers
+3. Force recreate containers to ensure clean state
+
+The database will be running and accessible once the command completes.
+
+#### Stopping the Database
+
+To stop the database and clean up resources:
+
+```bash
+npm stop
+```
+
+This command will:
+
+1. Stop all running containers
+2. Remove orphaned containers
+3. Remove all images created by the deployment
+
+#### Docker Commands
+
+For more granular control, you can use these Docker-specific commands:
+
+```bash
+npm run docker       # Start Docker containers (without running checks)
+npm run docker:start # Start containers with build and force recreate
+npm run docker:stop  # Stop containers and clean up
+```
+
+**Note**: The `start` command includes quality checks before starting Docker. Use
+`npm run docker` if you want to skip the checks and start containers directly.
+
+### Database Connection
+
+#### Connecting to MariaDB from Command Line
+
+Once the database is running, you can connect using the MariaDB client:
+
+**Method 1: Using Docker Exec (Recommended)**
+
+Connect directly via the container:
+
+```bash
+# Connect as nova_api user
+docker exec -it nova-deploy-nova-db-1 mariadb -u nova_api -p nova
+```
+
+**Method 2: Using MySQL/MariaDB Client from Host**
+
+If you have `mysql` or `mariadb` client installed on your host machine:
+
+```bash
+# Connect via localhost
+mysql -h 127.0.0.1 -P 3306 -u nova_api -p nova
+
+# Or with mariadb command
+mariadb -h 127.0.0.1 -P 3306 -u nova_api -p nova
+```
+
+Install MySQL client if needed:
+
+```bash
+# Ubuntu/Debian
+sudo apt install mysql-client
+
+# macOS
+brew install mysql-client
+```
+
+**Development Database Credentials:**
+
+- Database name: `nova`
+- Standard user: `nova_api`
+
+#### Schema Updates and Data Persistence
+
+The nova-db image includes SQL initialisation scripts that create tables and seed data.
+These scripts **only run when the database volume is empty** (first initialisation).
+
+**Important Behaviour:**
+
+- **First Run**: Volume is empty → SQL scripts run → Database initialised with schema/data
+- **Subsequent Runs**: Volume has data → SQL scripts are skipped → Existing data persists
+- **After Image Update**: New SQL scripts in updated image are **NOT applied** to existing
+  volumes
+
+**Handling Schema Updates:**
+
+If the nova-db image is updated with new tables or schema changes, you have two options:
+
+1. **Fresh Start** (Development - loses all data):
+
+   ```bash
+   # Stop and remove volumes
+   docker compose down -v
+   
+   # Restart with fresh database
+   npm start
+   ```
+
+2. **Manual Migration** (Production - preserves data):
+
+   ```bash
+   # Extract new SQL from updated image
+   docker run --rm ghcr.io/nova-eco/nova-db:latest \
+     cat /docker-entrypoint-initdb.d/new-table.sql > migration.sql
+   
+   # Apply to running database
+   docker exec -i nova-deploy-nova-db-1 mariadb -u root -p nova < migration.sql
+   ```
+
 ## Architecture
 
 ### Automated Rebuild Process
 
-The following sequence diagram illustrates how nova-deploy is automatically rebuilt
-when the nova-db Docker image is updated:
+The following sequence diagram illustrates how nova-deploy is automatically rebuilt when
+the nova-db Docker image is updated:
 
 ```mermaid
 sequenceDiagram
@@ -76,6 +236,116 @@ The rebuild process can be triggered in two ways:
 1. **Automatic**: Via `repository_dispatch` event when nova-db is updated
 2. **Manual**: Via `workflow_dispatch` through GitHub Actions UI
 
+## Deployment
+
+### Digital Ocean Deployment
+
+This project includes automated deployment to Digital Ocean droplets via GitHub Actions.
+The deployment workflow is triggered on every push to the `master` or `main` branch.
+
+#### Prerequisites
+
+1. **Digital Ocean Droplet** with:
+   - Ubuntu 22.04 or later
+   - Docker and Docker Compose installed
+   - Node.js 21+ installed
+   - SSH access configured
+
+2. **GitHub Repository Secrets** configured (see below)
+
+#### Required Secrets
+
+Configure these secrets in your GitHub repository settings (`Settings` →
+`Secrets and variables` → `Actions`):
+
+| Secret            | Description                              | Example               |
+| ----------------- | ---------------------------------------- | --------------------- |
+| `DROPLET_IP`      | IP address of your Digital Ocean droplet | `203.0.113.42`        |
+| `DROPLET_USER`    | SSH username (usually `root`)            | `root`                |
+| `SSH_PRIVATE_KEY` | Private SSH key for authentication       | `-----BEGIN OPENSSH-` |
+| `DROPLET_PORT`    | SSH port (optional, defaults to 22)      | `22`                  |
+| `DEPLOY_PATH`     | Deployment directory (optional)          | `/root/nova-deploy`   |
+
+#### Deployment Process
+
+The deployment workflow automatically:
+
+1. Connects to your droplet via SSH
+2. Pulls the latest code from GitHub
+3. Installs/updates dependencies
+4. Validates Docker Compose configuration
+5. Pulls latest Docker images
+6. Restarts services with zero-downtime deployment
+7. Verifies deployment health
+
+#### Manual Deployment
+
+You can also deploy manually via SSH:
+
+```bash
+# SSH into your droplet
+ssh root@your-droplet-ip
+
+# Navigate to deployment directory
+cd /root/nova-deploy
+
+# Pull latest changes
+git pull origin master
+
+# Install dependencies
+npm ci --production
+
+# Restart services
+docker compose down
+docker compose up -d
+
+# Verify deployment
+docker compose ps
+```
+
+#### Production Considerations
+
+**Data Persistence:**
+
+The database uses Docker volumes for data persistence:
+
+- `nova-db-data`: MariaDB data directory (`/var/lib/mysql`)
+- `./backups`: Database backup storage
+
+**Security:**
+
+- Database port is bound to `127.0.0.1` only (not exposed to internet)
+- Use Digital Ocean firewall to restrict access
+- Ensure `.env` file has strong passwords
+
+**Resource Limits:**
+
+- CPU limit: 2 cores
+- Memory limit: 2GB
+- Memory reservation: 512MB
+
+**Backups:**
+
+Create automated backup script on your droplet:
+
+```bash
+#!/bin/bash
+# /root/backup-db.sh
+docker exec nova-db mysqldump -u root -p${NOVA_DB__USER__ROOT_PASS} \
+  --all-databases --single-transaction | gzip > \
+  /root/nova-deploy/backups/backup-$(date +%Y%m%d-%H%M%S).sql.gz
+
+# Keep only last 7 days of backups
+find /root/nova-deploy/backups -name "backup-*.sql.gz" -mtime +7 -delete
+```
+
+Add to crontab:
+
+```bash
+crontab -e
+# Add: 0 2 * * * /root/backup-db.sh
+```
+
 ## Development
 
 ### Code Quality Standards
@@ -97,26 +367,25 @@ This project enforces strict code quality standards using automated tools:
 **Commands**:
 
 ```bash
-npm run format:check  # Check formatting without making changes
-npm run format:fix    # Automatically fix formatting issues
+npm run format:check # Check formatting without making changes
+npm run format:fix   # Automatically fix formatting issues
 ```
 
-#### Linting
+#### Docker Compose Linting
 
-- **Tool**: [ESLint](https://eslint.org/) with TypeScript support
-- **Configuration**: `eslint.config.mjs`
-- **Standards**:
-  - ESLint recommended rules
-  - TypeScript ESLint recommended rules
-  - Prettier integration (no conflicts)
-  - Console statements trigger warnings
-  - Prettier violations are errors
+- **Tool**: Docker Compose built-in validator
+- **Purpose**: Validates Docker Compose configuration files
+- **What it checks**:
+  - YAML syntax validity
+  - Docker Compose schema compliance
+  - Environment variable resolution
+  - Service configuration correctness
 
 **Commands**:
 
 ```bash
-npm run lint:check  # Check for linting issues
-npm run lint:fix    # Automatically fix linting issues
+npm run lint         # Validate Docker Compose configuration
+npm run lint:compose # Same as above (explicit)
 ```
 
 #### Spell Checking
@@ -131,28 +400,13 @@ npm run lint:fix    # Automatically fix linting issues
 **Commands**:
 
 ```bash
-npm run spell  # Check spelling
-```
-
-#### Static Analysis
-
-- **Tool**: [fta-cli](https://github.com/sgtest/fta-cli)
-- **Configuration**: `fta.json`
-- **Standards**:
-  - Analyzes TypeScript files for code quality
-  - Excludes test files and dependencies
-  - Score cap: 60
-
-**Commands**:
-
-```bash
-npm run analysis  # Run static analysis
+npm run spell # Check spelling
 ```
 
 ### Pushing Changes
 
-This repository uses Git hooks to ensure code quality before changes are pushed.
-Follow these steps:
+This repository uses Git hooks to ensure code quality before changes are pushed. Follow
+these steps:
 
 #### 1. Make Your Changes
 
@@ -200,9 +454,13 @@ git commit -m "docs: update installation instructions"
 git commit -m "ci: update workflow to use latest actions"
 ```
 
-**Commit Hook**: The `commit-msg` hook will automatically validate your commit
-message format using Commitlint. If the format is incorrect, the commit will be
-rejected with an error message.
+**Commit Hooks**:
+
+- The `commit-msg` hook will automatically validate your commit message format using
+  Commitlint. If the format is incorrect, the commit will be rejected.
+- The `prepare-commit-msg` hook will automatically generate/update the CHANGELOG.md file
+  and add it to your commit. This ensures the changelog is always up to date with all
+  commits.
 
 #### 4. Push Your Changes
 
@@ -210,21 +468,19 @@ rejected with an error message.
 git push
 ```
 
-**Pre-push Hook**: Before your changes are pushed, the `pre-push` hook will
-automatically run:
+**Pre-push Hook**: Before your changes are pushed, the `pre-push` hook will automatically
+run:
 
 1. **Format check** - Ensures all files are properly formatted
-2. **Lint check** - Ensures code meets linting standards
+2. **Docker Compose lint** - Validates Docker Compose configuration
 3. **Spell check** - Ensures no spelling errors
-4. **Static analysis** - Ensures code quality metrics are met
 
 If any of these checks fail, the push will be blocked. You must fix the issues before
 pushing:
 
 ```bash
-npm run format:fix  # Fix formatting issues
-npm run lint:fix    # Fix linting issues
-npm run check       # Run all checks manually
+npm run format:fix # Fix formatting issues
+npm run check      # Run all checks manually
 ```
 
 ### Running All Checks Manually
@@ -239,14 +495,26 @@ This runs the same checks that will be executed during the pre-push hook.
 
 ## Scripts
 
-| Script              | Description                                |
-| ------------------- | ------------------------------------------ |
-| `npm run analysis`  | Run static code analysis                   |
-| `npm run changelog` | Generate changelog from git commits        |
-| `npm run check`     | Run all quality checks (format/lint/spell) |
-| `npm run format`    | Check code formatting                      |
-| `npm run lint`      | Check code for linting issues              |
-| `npm run spell`     | Check spelling in source files             |
+| Script              | Description                                      |
+| ------------------- | ------------------------------------------------ |
+| `npm start`         | Run checks and start Docker containers           |
+| `npm stop`          | Stop Docker containers and clean up              |
+| `npm run changelog` | Generate changelog from git commits              |
+| `npm run check`     | Run all quality checks (format/lint/spell)       |
+| `npm run docker`    | Start Docker containers (without running checks) |
+| `npm run format`    | Check code formatting                            |
+| `npm run lint`      | Validate Docker Compose configuration            |
+| `npm run spell`     | Check spelling in source files                   |
+
+## Changelog
+
+All notable changes to this project are automatically documented in
+[CHANGELOG.md](CHANGELOG.md). The changelog is generated from git commits using
+[auto-changelog](https://github.com/CookPete/auto-changelog) and follows the
+[Conventional Commits](https://www.conventionalcommits.org/) standard.
+
+The changelog is automatically updated with each commit via the `prepare-commit-msg` git
+hook.
 
 ## License
 
