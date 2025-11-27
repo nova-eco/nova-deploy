@@ -1,0 +1,37 @@
+#####################################################################
+#                                                                   #
+# Script:  .dockerignore                                            #
+#                                                                   #
+# Purpose: A list of files and dirs to be ignored by Docker.        #
+#                                                                   #
+# Date:    25th May 2025                                            #
+#                                                                   #
+# Author:  admin <admin@nova>                                       #
+#                                                                   #
+#####################################################################
+
+#
+# Hidden files to be ignored
+#
+.editorconfig
+.env
+.gitignore
+.prettierignore
+.prettierrc.json
+.shellcheckrc
+.sql-lint.json
+
+#
+# Standard files to be ignored
+#
+CHANGELOG.md
+cspell.json
+LICENSE.txt
+package.json
+README.md
+
+#
+# Standard dirs to be ignored
+#
+node_modules/
+scripts/

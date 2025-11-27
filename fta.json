@@ -1,0 +1,17 @@
+{
+  "exclude_directories": [
+    ".git",
+    ".github",
+    ".husky",
+    "coverage",
+    "deps",
+    "dist",
+    "node_modules",
+    "test"
+  ],
+  "exclude_under": 0,
+  "extensions": [".ts"],
+  "include_comments": false,
+  "output_limit": 20,
+  "score_cap": 60
+}

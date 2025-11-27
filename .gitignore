@@ -1,0 +1,44 @@
+#####################################################################
+#                                                                   #
+# Script:  .gitignore                                               #
+#                                                                   #
+# Purpose: A list of files and dirs to be ignored by git.           #
+#                                                                   #
+# Date:    12th October 2025                                        #
+#                                                                   #
+# Author:  Nova admin <admin@nova.eco>                              #
+#                                                                   #
+#####################################################################
+
+#
+# File extensions to be ignored
+#
+.bak
+.db
+.DS_Store
+.err
+.gz
+.log
+.pid
+.out
+.rds
+.sqlite
+.swp
+
+#
+# Hidden dirs to be ignored
+#
+.idea/
+
+#
+# Hidden files to be ignored
+#
+.env
+.env.override.jest
+
+# Dirs to be ignored
+#
+coverage
+deps
+dist
+node_modules/

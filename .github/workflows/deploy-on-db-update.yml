@@ -1,0 +1,61 @@
+#####################################################################
+#                                                                   #
+# Workflow: deploy-on-db-update.yml                                 #
+#                                                                   #
+# Purpose:  Rebuild and deploy nova-deploy when nova-db Docker     #
+#           image is updated                                        #
+#                                                                   #
+# Author:   nova admin <admin@nova.eco>                             #
+#                                                                   #
+#####################################################################
+
+name: Deploy on DB Update
+
+on:
+  repository_dispatch:
+    types:
+      - nova-db-updated
+  workflow_dispatch:
+
+jobs:
+  rebuild-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull latest nova-db image
+        run: |
+          echo "🔄 Pulling latest nova-db Docker image..."
+          docker compose pull nova-db
+
+      - name: Restart services
+        run: |
+          echo "🚀 Restarting services with updated nova-db image..."
+          docker compose up -d --force-recreate nova-db
+
+      - name: Verify deployment
+        run: |
+          echo "✅ Deployment verification"
+          docker compose ps
+          docker images | grep nova-db
+
+      - name: Deployment summary
+        if: success()
+        run: |
+          echo "✅ Successfully rebuilt nova-deploy with latest nova-db"
+          echo "📦 Source trigger: ${{ github.event.client_payload.source }}"
+          echo "🏷️  Image tag: ${{ github.event.client_payload.image_tag }}"
+          echo "👤 Triggered by: ${{ github.event.client_payload.triggered_by }}"
+          echo "🔗 Source SHA: ${{ github.event.client_payload.sha }}"

@@ -1,0 +1,50 @@
+{
+  "name": "@nova/nova-deploy",
+  "version": "0.5.0",
+  "private": true,
+  "homepage": "https://github.com/nova-eco",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nova-eco/nova-deploy.git"
+  },
+  "keywords": [
+    "nova",
+		"deployment"
+  ],
+  "license": "MIT",
+  "author": "admin <admin@mova.eco>",
+  "packageManager": "npm@10",
+  "engines": {
+    "node": ">=21",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "analysis": "npx fta-cli .",
+    "changelog": "auto-changelog",
+    "check": "npm run format && npm run lint && npm run spell && npm run analysis",
+    "format": "npm run format:check",
+    "format:base": "npx prettier .",
+    "format:check": "npm run format:base -- --check",
+    "format:fix": "npm run format:base -- --write",
+    "lint": "npm run lint:check",
+    "lint:check": "npx eslint .",
+    "lint:fix": "npm run lint:check -- --fix",
+    "spell": "npx cspell ."
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.1.1",
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.10.0",
+    "@types/node": "^22.7.6",
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
+    "auto-changelog": "^2.5.0",
+    "cspell": "^8.18.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "fta-cli": "^2.0.0",
+    "prettier": "^3.3.3",
+    "prettier-plugin-sh": "^0.17.4",
+    "prettier-plugin-sort-json": "^4.1.1"
+  }
+}

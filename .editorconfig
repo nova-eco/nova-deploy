@@ -1,0 +1,36 @@
+#####################################################################
+#                                                                   #
+# Script:  .editorconfig                                            #
+#                                                                   #
+# Purpose: Consistent coding style across editors and IDEs          #
+#                                                                   #
+# Date:    12th October 2025                                        #
+#                                                                   #
+# Author:  Nova admin <admin@nova.eco>                              #
+#                                                                   #
+#####################################################################
+
+#
+# All files
+#
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+#
+# .git* overrides
+#
+[.git*]
+indent_size = tab
+indent_style = tab
+
+#
+# .sh overrides
+#
+[.sh*]
+indent_size = tab
+indent_style = tab

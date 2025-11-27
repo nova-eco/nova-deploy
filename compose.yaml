@@ -1,0 +1,15 @@
+#####################################################################
+#                                                                   #
+# Script:  compose.yaml                                             #
+#                                                                   #
+# Purpose: Docker compose definition for nova-deploy                #
+#                                                                   #
+# Date:    20th November 2025                                       #
+#                                                                   #
+# Author:  nova admin <admin@nova.eco>                              #
+#                                                                   #
+#####################################################################
+
+services:
+  nova-db:
+     image: "ghcr.io/nova-eco/nova-db:latest"

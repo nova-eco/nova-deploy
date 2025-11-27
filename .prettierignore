@@ -1,0 +1,23 @@
+#####################################################################
+#                                                                   #
+# Script:  .prettierignore                                          #
+#                                                                   #
+# Purpose: A list of files and dirs to be ignored by prettier.      #
+#                                                                   #
+# Date:    12th October 2025                                        #
+#                                                                   #
+# Author:  Nova admin <admin@nova.eco>                              #
+#                                                                   #
+#####################################################################
+
+#
+# Standard files to be ignored
+#
+CHANGELOG.md
+LICENSE.txt
+
+#
+# Standard dirs to be ignored
+#
+deps/
+node_modules/
