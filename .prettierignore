@@ -27,3 +27,4 @@ LICENSE.txt
 #
 backups/
 node_modules/
+var/
