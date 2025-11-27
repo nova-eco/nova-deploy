@@ -69,11 +69,8 @@ feature requests.
 
 3. **Configure environment variables:**
 
-   Edit the `.env` file and set the required variables:
-
-   ```bash
-   NOVA__NETWORK="your-network-name"
-   ```
+   Edit the `.env` file and set the required variables. See the
+   [Environment Variables](#environment-variables) section for details.
 
 ### Usage
 
@@ -119,6 +116,62 @@ npm run docker:stop  # Stop containers and clean up
 
 **Note**: The `start` command includes quality checks before starting Docker. Use
 `npm run docker` if you want to skip the checks and start containers directly.
+
+## Environment Variables
+
+The nova-deploy package requires several environment variables for configuration. These
+are organized by package (nova-db and nova-api) with standardized prefixes for clarity.
+
+### Database Variables (NOVA*DB*\*)
+
+| Variable                 | Description                                | Default                       | Used In                          |
+| ------------------------ | ------------------------------------------ | ----------------------------- | -------------------------------- |
+| `NOVA_DB_AUTHOR`         | Author information for the nova-db package | `"Nova Admin <admin@ecodev>"` | nova-db/Dockerfile               |
+| `NOVA_DB_CONTAINER_NAME` | Name of the database container             | `"nova-db"`                   | Container identification         |
+| `NOVA_DB_NAME`           | MariaDB database name                      | `"nova"`                      | compose.yaml, nova-db/Dockerfile |
+| `NOVA_DB_PORT`           | Database port                              | `"3306"`                      | compose.yaml port mapping        |
+| `NOVA_DB_SQL_FILE`       | SQL file pattern for initialization        | `"*.sql"`                     | nova-db/Dockerfile COPY command  |
+| `NOVA_DB_SQL_PATH`       | Path to SQL initialization files           | `"./sql"`                     | nova-db/Dockerfile COPY command  |
+| `NOVA_DB_NETWORK`        | Docker network name                        | `"nova-network"`              | Shared network between services  |
+| `NOVA_DB_USER_ROOT`      | MariaDB root username                      | `"root"`                      | Database administration          |
+| `NOVA_DB_USER_ROOT_PASS` | MariaDB root password                      | `"pass"`                      | compose.yaml, nova-db/Dockerfile |
+| `NOVA_DB_USER_STD`       | Standard database user for API             | `"nova_api"`                  | compose.yaml, nova-db/Dockerfile |
+| `NOVA_DB_USER_STD_PASS`  | Standard user password                     | `"nova_api_pass"`             | compose.yaml, nova-db/Dockerfile |
+
+### API Variables (NOVA*API*\*)
+
+| Variable                  | Description                                 | Default                         | Used In                                           |
+| ------------------------- | ------------------------------------------- | ------------------------------- | ------------------------------------------------- |
+| `NOVA_API_AUTHOR`         | Author information for the nova-api package | `"Nova Admin <admin@nova.eco>"` | compose.yaml, nova-api/Dockerfile                 |
+| `NOVA_API_CONTAINER_NAME` | Name of the API container                   | `"nova-api"`                    | Container identification                          |
+| `NOVA_API_NAME`           | Logical name of the API application         | `"email_accounts"`              | compose.yaml, nova-api/Dockerfile                 |
+| `NOVA_API_PORT`           | API service port                            | `"3001"`                        | compose.yaml, nova-api/Dockerfile, runtime config |
+| `NOVA_API_USER_ROOT`      | Root user for API operations                | `"root"`                        | Internal API administration                       |
+| `NOVA_API_USER_ROOT_PASS` | Root password for API operations            | `"pass"`                        | Internal API administration                       |
+| `NOVA_API_USER_STD`       | Standard user for API operations            | `"nova_api"`                    | Internal API user management                      |
+| `NOVA_API_USER_STD_PASS`  | Standard user password                      | `"nova_api_pass"`               | Internal API user management                      |
+
+### API Application Variables (NOVA*API*\*)
+
+| Variable                         | Description                       | Default               | Used In                                           |
+| -------------------------------- | --------------------------------- | --------------------- | ------------------------------------------------- |
+| `NOVA_API_SERVICE_NAME`          | Service name for the API backend  | `"nova-be-api"`       | compose.yaml, nova-api/Dockerfile, runtime config |
+| `NOVA_API_DB_HOST`               | Database host for API connections | `"nova-db"`           | compose.yaml, nova-api/src/models/Database.ts     |
+| `NOVA_API_DB_USER`               | Database username for API         | `"nova_api"`          | compose.yaml, nova-api/src/models/Database.ts     |
+| `NOVA_API_DB_PASSWORD`           | Database password for API         | `"nova_api_pass"`     | compose.yaml, nova-api/src/models/Database.ts     |
+| `NOVA_API_DB_NAME`               | Database name for API             | `"nova"`              | compose.yaml, nova-api/src/models/Database.ts     |
+| `NOVA_API_EMAIL_SERVICE_ENABLED` | Enable/disable email service      | `"false"`             | nova-api/src/config/emailServiceEnabled.ts        |
+| `NOVA_API_OPENAPI_DIR_NAME`      | OpenAPI specification directory   | `"public"`            | nova-api/src/config/openApiDirName.ts             |
+| `NOVA_API_OPENAPI_FILE_NAME`     | OpenAPI specification filename    | `"openapi.spec.json"` | nova-api/src/config/openApiFileName.ts            |
+
+### Variable Naming Convention
+
+All variables follow a standardized naming convention:
+
+- **Database variables**: `NOVA_DB_*`
+- **API variables**: `NOVA_API_*`
+- Single underscores (`_`) separate words
+- Network configuration uses `NOVA_DB_NETWORK` as it's shared between services
 
 ### Database Connection
 

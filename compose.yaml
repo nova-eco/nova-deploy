@@ -16,31 +16,31 @@ services:
       context: ../nova-db
       dockerfile: Dockerfile
       args:
-        NOVA_DB__AUTHOR: ${NOVA_DB__AUTHOR}
-        NOVA_DB__SQL__FILE: ${NOVA_DB__SQL__FILE}
-        NOVA_DB__SQL__PATH: ${NOVA_DB__SQL__PATH}
-        MARIADB_DATABASE: ${NOVA_DB__NAME}
-        MARIADB_ROOT_PASSWORD: ${NOVA_DB__USER__ROOT_PASS}
-        MARIADB_USER: ${NOVA_DB__USER__STD}
-        MARIADB_PASSWORD: ${NOVA_DB__USER__STD_PASS}
+        NOVA_DB_AUTHOR: ${NOVA_DB_AUTHOR}
+        NOVA_DB_SQL_FILE: ${NOVA_DB_SQL_FILE}
+        NOVA_DB_SQL_PATH: ${NOVA_DB_SQL_PATH}
+        MARIADB_DATABASE: ${NOVA_DB_NAME}
+        MARIADB_ROOT_PASSWORD: ${NOVA_DB_USER_ROOT_PASS}
+        MARIADB_USER: ${NOVA_DB_USER_STD}
+        MARIADB_PASSWORD: ${NOVA_DB_USER_STD_PASS}
     image: 'ghcr.io/nova-eco/nova-db:latest'
     env_file:
       - path: ./.env
         required: true
     environment:
-      MARIADB_DATABASE: ${NOVA_DB__NAME}
-      MARIADB_ROOT_PASSWORD: ${NOVA_DB__USER__ROOT_PASS}
-      MARIADB_USER: ${NOVA_DB__USER__STD}
-      MARIADB_PASSWORD: ${NOVA_DB__USER__STD_PASS}
+      MARIADB_DATABASE: ${NOVA_DB_NAME}
+      MARIADB_ROOT_PASSWORD: ${NOVA_DB_USER_ROOT_PASS}
+      MARIADB_USER: ${NOVA_DB_USER_STD}
+      MARIADB_PASSWORD: ${NOVA_DB_USER_STD_PASS}
     healthcheck:
       interval: 10s
       start_period: 30s
       test: ['CMD', 'mariadb', '-uroot', '-ppass', '-e', 'SELECT 1']
       timeout: 5s
     networks:
-      - '${NOVA_DB__NETWORK}'
+      - '${NOVA_DB_NETWORK}'
     ports:
-      - '${NOVA_DB__PORT}:${NOVA_DB__PORT}'
+      - '${NOVA_DB_PORT}:${NOVA_DB_PORT}'
     restart: unless-stopped
     deploy:
       resources:
@@ -55,11 +55,10 @@ services:
       context: ../nova-api
       dockerfile: Dockerfile
       args:
-        NOVA_API__AUTHOR: ${NOVA_API__AUTHOR}
-        NOVA_API__NAME: ${NOVA_API__NAME}
-        NOVA_API__PORT: ${NOVA_API__PORT}
-        API_NAME: ${API_NAME}
-        API_PORT: ${API_PORT}
+        NOVA_API_AUTHOR: ${NOVA_API_AUTHOR}
+        NOVA_API_NAME: ${NOVA_API_NAME}
+        NOVA_API_PORT: ${NOVA_API_PORT}
+        NOVA_API_SERVICE_NAME: ${NOVA_API_SERVICE_NAME}
     image: 'ghcr.io/nova-eco/nova-api:latest'
     depends_on:
       nova-db:
@@ -68,25 +67,24 @@ services:
       - path: ./.env
         required: true
     environment:
-      NOVA_API__AUTHOR: '${NOVA_API__AUTHOR}'
-      NOVA_API__NAME: '${NOVA_API__NAME}'
-      NOVA_API__PORT: '${NOVA_API__PORT}'
-      API_NAME: '${API_NAME}'
-      API_PORT: '${API_PORT}'
-      DB_HOST: '${DB_HOST}'
-      DB_USER: '${DB_USER}'
-      DB_PASSWORD: '${DB_PASSWORD}'
-      DB_NAME: '${DB_NAME}'
+      NOVA_API_AUTHOR: '${NOVA_API_AUTHOR}'
+      NOVA_API_NAME: '${NOVA_API_NAME}'
+      NOVA_API_PORT: '${NOVA_API_PORT}'
+      NOVA_API_SERVICE_NAME: '${NOVA_API_SERVICE_NAME}'
+      NOVA_API_DB_HOST: '${NOVA_API_DB_HOST}'
+      NOVA_API_DB_USER: '${NOVA_API_DB_USER}'
+      NOVA_API_DB_PASSWORD: '${NOVA_API_DB_PASSWORD}'
+      NOVA_API_DB_NAME: '${NOVA_API_DB_NAME}'
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:${API_PORT}/healthcheck']
+      test: ['CMD', 'curl', '-f', 'http://localhost:${NOVA_API_PORT}/healthcheck']
       interval: 10s
       timeout: 10s
       retries: 3
       start_period: 30s
     networks:
-      - '${NOVA__NETWORK}'
+      - '${NOVA_DB_NETWORK}'
     ports:
-      - '${API_PORT}:${API_PORT}'
+      - '${NOVA_API_PORT}:${NOVA_API_PORT}'
     restart: unless-stopped
     deploy:
       resources:
@@ -100,4 +98,4 @@ networks:
   nova-network:
     driver: bridge
     internal: false
-    name: ${NOVA_DB__NETWORK}
+    name: ${NOVA_DB_NETWORK}
