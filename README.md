@@ -124,19 +124,19 @@ are organized by package (nova-db and nova-api) with standardized prefixes for c
 
 ### Database Variables (NOVA*DB*\*)
 
-| Variable                 | Description                                | Default                       | Used In                          |
-| ------------------------ | ------------------------------------------ | ----------------------------- | -------------------------------- |
-| `NOVA_DB_AUTHOR`         | Author information for the nova-db package | `"Nova Admin <admin@nova>"`   | nova-db/Dockerfile               |
-| `NOVA_DB_CONTAINER_NAME` | Name of the database container             | `"nova-db"`                   | Container identification         |
-| `NOVA_DB_NAME`           | MariaDB database name                      | `"nova"`                      | compose.yaml, nova-db/Dockerfile |
-| `NOVA_DB_PORT`           | Database port                              | `"3306"`                      | compose.yaml port mapping        |
-| `NOVA_DB_SQL_FILE`       | SQL file pattern for initialization        | `"*.sql"`                     | nova-db/Dockerfile COPY command  |
-| `NOVA_DB_SQL_PATH`       | Path to SQL initialization files           | `"./sql"`                     | nova-db/Dockerfile COPY command  |
-| `NOVA_DB_NETWORK`        | Docker network name                        | `"nova-network"`              | Shared network between services  |
-| `NOVA_DB_USER_ROOT`      | MariaDB root username                      | `"root"`                      | Database administration          |
-| `NOVA_DB_USER_ROOT_PASS` | MariaDB root password                      | `"pass"`                      | compose.yaml, nova-db/Dockerfile |
-| `NOVA_DB_USER_STD`       | Standard database user for API             | `"nova_api"`                  | compose.yaml, nova-db/Dockerfile |
-| `NOVA_DB_USER_STD_PASS`  | Standard user password                     | `"nova_api_pass"`             | compose.yaml, nova-db/Dockerfile |
+| Variable                 | Description                                | Default                     | Used In                          |
+| ------------------------ | ------------------------------------------ | --------------------------- | -------------------------------- |
+| `NOVA_DB_AUTHOR`         | Author information for the nova-db package | `"Nova Admin <admin@nova>"` | nova-db/Dockerfile               |
+| `NOVA_DB_CONTAINER_NAME` | Name of the database container             | `"nova-db"`                 | Container identification         |
+| `NOVA_DB_NAME`           | MariaDB database name                      | `"nova"`                    | compose.yaml, nova-db/Dockerfile |
+| `NOVA_DB_PORT`           | Database port                              | `"3306"`                    | compose.yaml port mapping        |
+| `NOVA_DB_SQL_FILE`       | SQL file pattern for initialization        | `"*.sql"`                   | nova-db/Dockerfile COPY command  |
+| `NOVA_DB_SQL_PATH`       | Path to SQL initialization files           | `"./sql"`                   | nova-db/Dockerfile COPY command  |
+| `NOVA_DB_NETWORK`        | Docker network name                        | `"nova-network"`            | Shared network between services  |
+| `NOVA_DB_USER_ROOT`      | MariaDB root username                      | `"root"`                    | Database administration          |
+| `NOVA_DB_USER_ROOT_PASS` | MariaDB root password                      | `"pass"`                    | compose.yaml, nova-db/Dockerfile |
+| `NOVA_DB_USER_STD`       | Standard database user for API             | `"nova_api"`                | compose.yaml, nova-db/Dockerfile |
+| `NOVA_DB_USER_STD_PASS`  | Standard user password                     | `"nova_api_pass"`           | compose.yaml, nova-db/Dockerfile |
 
 ### API Variables (NOVA*API*\*)
 
