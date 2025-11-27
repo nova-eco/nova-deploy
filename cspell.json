@@ -33,7 +33,9 @@
     "mysqldump",
     "NOVA",
     "nova",
+    "ppass",
     "untruthy",
+    "uroot",
     "UUID",
     "UUIDV",
     "vars"
