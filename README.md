@@ -26,7 +26,6 @@ feature requests.
 - [Deployment](#deployment)
   - [Digital Ocean Deployment](#digital-ocean-deployment)
   - [Required Secrets](#required-secrets)
-  - [Manual Deployment](#manual-deployment)
 - [Development](#development)
   - [Code Quality Standards](#code-quality-standards)
     - [Formatting](#formatting)
@@ -60,7 +59,7 @@ feature requests.
 2. **Install dependencies:**
 
    ```bash
-   npm install
+   npm i
    ```
 
    This will automatically:
@@ -127,15 +126,6 @@ npm run docker:stop  # Stop containers and clean up
 
 Once the database is running, you can connect using the MariaDB client:
 
-**Method 1: Using Docker Exec (Recommended)**
-
-Connect directly via the container:
-
-```bash
-# Connect as nova_api user
-docker exec -it nova-deploy-nova-db-1 mariadb -u nova_api -p nova
-```
-
 **Method 2: Using MySQL/MariaDB Client from Host**
 
 If you have `mysql` or `mariadb` client installed on your host machine:
@@ -148,21 +138,6 @@ mysql -h 127.0.0.1 -P 3306 -u nova_api -p nova
 mariadb -h 127.0.0.1 -P 3306 -u nova_api -p nova
 ```
 
-Install MySQL client if needed:
-
-```bash
-# Ubuntu/Debian
-sudo apt install mysql-client
-
-# macOS
-brew install mysql-client
-```
-
-**Development Database Credentials:**
-
-- Database name: `nova`
-- Standard user: `nova_api`
-
 #### Schema Updates and Data Persistence
 
 The nova-db image includes SQL initialisation scripts that create tables and seed data.
@@ -174,31 +149,6 @@ These scripts **only run when the database volume is empty** (first initialisati
 - **Subsequent Runs**: Volume has data → SQL scripts are skipped → Existing data persists
 - **After Image Update**: New SQL scripts in updated image are **NOT applied** to existing
   volumes
-
-**Handling Schema Updates:**
-
-If the nova-db image is updated with new tables or schema changes, you have two options:
-
-1. **Fresh Start** (Development - loses all data):
-
-   ```bash
-   # Stop and remove volumes
-   docker compose down -v
-   
-   # Restart with fresh database
-   npm start
-   ```
-
-2. **Manual Migration** (Production - preserves data):
-
-   ```bash
-   # Extract new SQL from updated image
-   docker run --rm ghcr.io/nova-eco/nova-db:latest \
-     cat /docker-entrypoint-initdb.d/new-table.sql > migration.sql
-   
-   # Apply to running database
-   docker exec -i nova-deploy-nova-db-1 mariadb -u root -p nova < migration.sql
-   ```
 
 ## Architecture
 
@@ -251,8 +201,6 @@ The deployment workflow is triggered on every push to the `master` or `main` bra
    - Node.js 21+ installed
    - SSH access configured
 
-2. **GitHub Repository Secrets** configured (see below)
-
 #### Required Secrets
 
 Configure these secrets in your GitHub repository settings (`Settings` →
@@ -265,86 +213,6 @@ Configure these secrets in your GitHub repository settings (`Settings` →
 | `SSH_PRIVATE_KEY` | Private SSH key for authentication       | `-----BEGIN OPENSSH-` |
 | `DROPLET_PORT`    | SSH port (optional, defaults to 22)      | `22`                  |
 | `DEPLOY_PATH`     | Deployment directory (optional)          | `/root/nova-deploy`   |
-
-#### Deployment Process
-
-The deployment workflow automatically:
-
-1. Connects to your droplet via SSH
-2. Pulls the latest code from GitHub
-3. Installs/updates dependencies
-4. Validates Docker Compose configuration
-5. Pulls latest Docker images
-6. Restarts services with zero-downtime deployment
-7. Verifies deployment health
-
-#### Manual Deployment
-
-You can also deploy manually via SSH:
-
-```bash
-# SSH into your droplet
-ssh root@your-droplet-ip
-
-# Navigate to deployment directory
-cd /root/nova-deploy
-
-# Pull latest changes
-git pull origin master
-
-# Install dependencies
-npm ci --production
-
-# Restart services
-docker compose down
-docker compose up -d
-
-# Verify deployment
-docker compose ps
-```
-
-#### Production Considerations
-
-**Data Persistence:**
-
-The database uses Docker volumes for data persistence:
-
-- `nova-db-data`: MariaDB data directory (`/var/lib/mysql`)
-- `./backups`: Database backup storage
-
-**Security:**
-
-- Database port is bound to `127.0.0.1` only (not exposed to internet)
-- Use Digital Ocean firewall to restrict access
-- Ensure `.env` file has strong passwords
-
-**Resource Limits:**
-
-- CPU limit: 2 cores
-- Memory limit: 2GB
-- Memory reservation: 512MB
-
-**Backups:**
-
-Create automated backup script on your droplet:
-
-```bash
-#!/bin/bash
-# /root/backup-db.sh
-docker exec nova-db mysqldump -u root -p${NOVA_DB__USER__ROOT_PASS} \
-  --all-databases --single-transaction | gzip > \
-  /root/nova-deploy/backups/backup-$(date +%Y%m%d-%H%M%S).sql.gz
-
-# Keep only last 7 days of backups
-find /root/nova-deploy/backups -name "backup-*.sql.gz" -mtime +7 -delete
-```
-
-Add to crontab:
-
-```bash
-crontab -e
-# Add: 0 2 * * * /root/backup-db.sh
-```
 
 ## Development
 
