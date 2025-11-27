@@ -17,6 +17,14 @@ CHANGELOG.md
 LICENSE.txt
 
 #
+# Hidden dirs to be ignored
+#
+.git/
+.github/
+
+#
 # Standard dirs to be ignored
 #
+backups/
+data/
 node_modules/
