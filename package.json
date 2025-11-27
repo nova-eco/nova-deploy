@@ -21,7 +21,9 @@
   "scripts": {
     "analysis": "npx fta-cli .",
     "changelog": "auto-changelog",
+    "changelog:commit": "git commit -m 'ci: update changelog' --no-verify",
     "check": "npm run format && npm run lint && npm run spell && npm run analysis",
+    "commit-msg": "commitlint --edit",
     "format": "npm run format:check",
     "format:base": "npx prettier .",
     "format:check": "npm run format:base -- --check",
@@ -29,9 +31,14 @@
     "lint": "npm run lint:check",
     "lint:check": "npx eslint .",
     "lint:fix": "npm run lint:check -- --fix",
+    "pre-push": "npm run check",
+    "prepare": "husky",
     "spell": "npx cspell ."
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/format": "^20.0.0",
     "@eslint/compat": "^1.1.1",
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.10.0",
@@ -39,10 +46,12 @@
     "@typescript-eslint/eslint-plugin": "^8.34.0",
     "@typescript-eslint/parser": "^8.34.0",
     "auto-changelog": "^2.5.0",
+    "commitlint": "^20.1.0",
     "cspell": "^8.18.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "fta-cli": "^2.0.0",
+    "husky": "^9.1.7",
     "prettier": "^3.3.3",
     "prettier-plugin-sh": "^0.17.4",
     "prettier-plugin-sort-json": "^4.1.1"

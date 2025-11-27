@@ -1,23 +1,22 @@
 #####################################################################
 #                                                                   #
-# Script:  .prettierignore                                          #
+# Script:  compose.override.yaml                                    #
 #                                                                   #
-# Purpose: A list of files and dirs to be ignored by prettier.      #
+# Purpose: Docker override definitions for the DB.                  #
 #                                                                   #
 # Date:    27th November 2025                                       #
 #                                                                   #
-# Author:  Nova admin <admin@nova.eco>                              #
+# Author:  nova admin <admin@nova.eco>                              #
 #                                                                   #
 #####################################################################
 
-#
-# Standard files to be ignored
-#
-CHANGELOG.md
-LICENSE.txt
+services:
+  nova-db:
+    networks:
+      - '${NOVA_DB__NETWORK}'
 
-#
-# Standard dirs to be ignored
-#
-deps/
-node_modules/
+networks:
+  nova-network:
+    driver: bridge
+    internal: false
+    name: ${NOVA_DB__NETWORK}

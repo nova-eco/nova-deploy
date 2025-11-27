@@ -4,7 +4,7 @@
  *                                                                   *
  * AUTHOR:      Nova Admin <admin@nova.eco>                          *
  *                                                                   *
- * DATE:        12th October 2025                                    *
+ * DATE:        27th November 2025                                   *
  *                                                                   *
  * PURPOSE:     An Eslint config for TypeScript with Prettier.       *
  *                                                                   *
