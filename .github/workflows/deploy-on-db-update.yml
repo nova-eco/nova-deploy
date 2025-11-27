@@ -2,7 +2,7 @@
 #                                                                   #
 # Workflow: deploy-on-db-update.yml                                 #
 #                                                                   #
-# Purpose:  Rebuild and deploy nova-deploy when nova-db Docker     #
+# Purpose:  Rebuild and deploy nova-deploy when nova-db Docker      #
 #           image is updated                                        #
 #                                                                   #
 # Author:   nova admin <admin@nova.eco>                             #

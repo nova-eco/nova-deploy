@@ -26,5 +26,4 @@ LICENSE.txt
 # Standard dirs to be ignored
 #
 backups/
-data/
 node_modules/

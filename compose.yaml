@@ -14,7 +14,7 @@ services:
   nova-db:
     image: 'ghcr.io/nova-eco/nova-db:latest'
     volumes:
-      - ./data:/var/lib/mysql
+      - ./var/lib/mysql:/var/lib/mysql
       - ./backups:/backups
     env_file:
       - path: ./.env
