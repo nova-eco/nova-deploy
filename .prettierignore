@@ -21,6 +21,7 @@ LICENSE.txt
 #
 .git/
 .github/
+.husky/
 
 #
 # Standard dirs to be ignored
