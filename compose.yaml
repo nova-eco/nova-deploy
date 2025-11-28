@@ -109,7 +109,7 @@ services:
         NOVA_WEB_PORT: ${NOVA_WEB_PORT}
     image: 'ghcr.io/nova-eco/nova-web:latest'
     depends_on:
-      nova-db:
+      nova-api:
         condition: service_healthy
     env_file:
       - path: ./.env

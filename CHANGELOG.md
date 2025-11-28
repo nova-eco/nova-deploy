@@ -17,4 +17,5 @@ All notable changes to this project will be documented in this file. Dates are d
 - feat: update prettier ignore [`a656593`](https://nova-eco/nova-eco/nova-deploy.git/commit/a6565931617ca4eb42f6eb244d38d943374e7360)
 - feat: update env vars [`0ac15b2`](https://nova-eco/nova-eco/nova-deploy.git/commit/0ac15b20d9ba9bdf8b5e07fff771836ea4e93d72)
 - feat: updated compose.yaml [`522e261`](https://nova-eco/nova-eco/nova-deploy.git/commit/522e261786279aa2ecbcbc00e1d1e1e643036443)
+- feat: update CHANGELOG and prettier [`3703c0e`](https://nova-eco/nova-eco/nova-deploy.git/commit/3703c0eeec3b90fc393f3c41f02d449ee98acf6d)
 - feat: updated CHANGELOG [`a384638`](https://nova-eco/nova-eco/nova-deploy.git/commit/a384638e39263e8427672d2ed6dd0cbcdf1bf370)
