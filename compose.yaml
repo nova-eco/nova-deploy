@@ -94,6 +94,54 @@ services:
         reservations:
           memory: 512M
 
+  nova-web:
+    build:
+      context: ../nova-web
+      dockerfile: Dockerfile
+      args:
+        NOVA_WEB_API_HOST: ${NOVA_WEB_API_HOST}
+        NOVA_WEB_API_PORT: ${NOVA_WEB_API_PORT}
+        NOVA_WEB_API_PROTOCOL: ${NOVA_WEB_API_PROTOCOL}
+        NOVA_WEB_AUTHOR: ${NOVA_WEB_AUTHOR}
+        NOVA_WEB_HOST: ${NOVA_WEB_HOST}
+        NOVA_WEB_NAME: ${NOVA_WEB_NAME}
+        NOVA_WEB_NETWORK: ${NOVA_WEB_NETWORK}
+        NOVA_WEB_PORT: ${NOVA_WEB_PORT}
+    image: 'ghcr.io/nova-eco/nova-web:latest'
+    depends_on:
+      nova-db:
+        condition: service_healthy
+    env_file:
+      - path: ./.env
+        required: true
+    environment:
+      NOVA_WEB_API_HOST: '${NOVA_WEB_API_HOST}'
+      NOVA_WEB_API_PORT: '${NOVA_WEB_API_PORT}'
+      NOVA_WEB_API_PROTOCOL: '${NOVA_WEB_API_PROTOCOL}'
+      NOVA_WEB_AUTHOR: '${NOVA_WEB_AUTHOR}'
+      NOVA_WEB_HOST: '${NOVA_WEB_HOST}'
+      NOVA_WEB_NAME: '${NOVA_WEB_NAME}'
+      NOVA_WEB_NETWORK: '${NOVA_WEB_NETWORK}'
+      NOVA_WEB_PORT: '${NOVA_WEB_PORT}'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:${NOVA_WEB_PORT}/healthcheck']
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - '${NOVA_WEB_NETWORK}'
+    ports:
+      - '${NOVA_WEB_PORT}:${NOVA_WEB_PORT}'
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          memory: 512M
+
 networks:
   nova-network:
     driver: bridge
