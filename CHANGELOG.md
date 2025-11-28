@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. Dates are d
 - feat: updated compose.yaml with db and api [`bb34306`](https://nova-eco/nova-eco/nova-deploy.git/commit/bb34306c9805051a8430ab057bda976f2b9c3d17)
 - feat: update compose.yaml [`d63d277`](https://nova-eco/nova-eco/nova-deploy.git/commit/d63d2770392685dd42ea5c3d09aae64de416abf6)
 - feat: update env vars [`83c5a74`](https://nova-eco/nova-eco/nova-deploy.git/commit/83c5a74167463f5ccd678541333efccf911a91ff)
+- feat: encompass nova-web within the deployment [`5bf03ee`](https://nova-eco/nova-eco/nova-deploy.git/commit/5bf03ee982b3fd4c95b057a144242420c058a933)
 - feat: update gitignore [`e651584`](https://nova-eco/nova-eco/nova-deploy.git/commit/e65158449c6a8b11e0a73a3c0eb30622a9d3ec48)
 - feat: small fixes made with the aim of unblocking the stalled push [`1c37e98`](https://nova-eco/nova-eco/nova-deploy.git/commit/1c37e98aa3cf26e8bb3fa4576f086b0c4ea90b32)
 - feat: update prettier ignore [`a656593`](https://nova-eco/nova-eco/nova-deploy.git/commit/a6565931617ca4eb42f6eb244d38d943374e7360)

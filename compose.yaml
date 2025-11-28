@@ -142,6 +142,53 @@ services:
         reservations:
           memory: 512M
 
+  nova-proxy:
+    build:
+      context: ../nova-proxy
+      dockerfile: Dockerfile
+      args:
+        NOVA_PROXY_AUTHOR: ${NOVA_PROXY_AUTHOR}
+        NOVA_PROXY_HOST: ${NOVA_PROXY_HOST}
+        NOVA_PROXY_NAME: ${NOVA_PROXY_NAME}
+        NOVA_PROXY_NETWORK: ${NOVA_PROXY_NETWORK}
+        NOVA_PROXY_PORT: ${NOVA_PROXY_PORT}
+    image: 'ghcr.io/nova-eco/nova-proxy:latest'
+    env_file:
+      - path: ./.env
+        required: true
+    environment:
+      NOVA_PROXY_AUTHOR: '${NOVA_PROXY_AUTHOR}'
+      NOVA_PROXY_HOST: '${NOVA_PROXY_HOST}'
+      NOVA_PROXY_NAME: '${NOVA_PROXY_NAME}'
+      NOVA_PROXY_NETWORK: '${NOVA_PROXY_NETWORK}'
+      NOVA_PROXY_PORT: '${NOVA_PROXY_PORT}'
+    healthcheck:
+      test:
+        - CMD
+        - service
+        - nginx
+        - status
+      timeout: 5s
+      interval: 1m0s
+      retries: 3
+    depends_on:
+      nova-api:
+        condition: service_healthy
+      nova-web:
+        condition: service_healthy
+    networks:
+      - '${NOVA_PROXY_NETWORK}'
+    ports:
+      - '${NOVA_PROXY_PORT}:${NOVA_PROXY_PORT}'
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
+
 networks:
   nova-network:
     driver: bridge
