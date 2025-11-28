@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. Dates are d
 - feat: add config, compose.yaml and README.md changes [`da12250`](https://nova-eco/nova-eco/nova-deploy.git/commit/da12250d8ba856e48cb0e7524b6808b4ad6b655a)
 - feat: updated README [`f5f583f`](https://nova-eco/nova-eco/nova-deploy.git/commit/f5f583fb71bf069b8242406a4c33c25d02982931)
 - feat: update env vars [`545ded5`](https://nova-eco/nova-eco/nova-deploy.git/commit/545ded518295cf6a2f92159f7bb229f329dd6064)
+- feat: add nova-web to compose.yaml [`89edf6b`](https://nova-eco/nova-eco/nova-deploy.git/commit/89edf6bbb7f70310ec901f80e03dec1f7579e476)
 - feat: updated compose.yaml with db and api [`bb34306`](https://nova-eco/nova-eco/nova-deploy.git/commit/bb34306c9805051a8430ab057bda976f2b9c3d17)
 - feat: update compose.yaml [`d63d277`](https://nova-eco/nova-eco/nova-deploy.git/commit/d63d2770392685dd42ea5c3d09aae64de416abf6)
 - feat: update env vars [`83c5a74`](https://nova-eco/nova-eco/nova-deploy.git/commit/83c5a74167463f5ccd678541333efccf911a91ff)

@@ -45,8 +45,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2.0'
-          memory: 2G
+          cpus: '1.0'
+          memory: 1G
         reservations:
           memory: 512M
 
@@ -80,7 +80,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
-      start_period: 30s
+      start_period: 40s
     networks:
       - '${NOVA_DB_NETWORK}'
     ports:
@@ -89,8 +89,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2.0'
-          memory: 2G
+          cpus: '1.0'
+          memory: 1G
         reservations:
           memory: 512M
 
@@ -108,9 +108,6 @@ services:
         NOVA_WEB_NETWORK: ${NOVA_WEB_NETWORK}
         NOVA_WEB_PORT: ${NOVA_WEB_PORT}
     image: 'ghcr.io/nova-eco/nova-web:latest'
-    depends_on:
-      nova-api:
-        condition: service_healthy
     env_file:
       - path: ./.env
         required: true
@@ -128,7 +125,10 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
-      start_period: 30s
+      start_period: 60s
+    depends_on:
+      nova-db:
+        condition: service_healthy
     networks:
       - '${NOVA_WEB_NETWORK}'
     ports:
@@ -137,8 +137,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2.0'
-          memory: 2G
+          cpus: '1.0'
+          memory: 1G
         reservations:
           memory: 512M
 
